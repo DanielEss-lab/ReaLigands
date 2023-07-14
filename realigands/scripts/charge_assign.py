@@ -17,29 +17,21 @@ df = pd.read_csv('./analysis/predictions.csv')
 df['new_names'] = df['Name'].str[1:-5] + '.mol'
 
 ligands_not_found = []
-base_path = '/home/brendan/research/FINAL_LIGANDS'
+base_path = ''
 count = 0
-for file in glob.glob('/home/brendan/research/FINAL_LIGANDS/**/**/*.mol'):
+for file in glob.glob('/**/**/*.mol'):
     try: 
-        # print(file)
         _,_,_,_,_,denticity,connection_type,core_file_name = file.split(sep='/')
-        # print(core_file_name)
         info = df.loc[df['new_names'] == core_file_name]
-        # print(info)
         charge = float(info['charge'].iloc[0])
-        # print(charge)
         confidence = float(info['confidence'].iloc[0])
-        # print(confidence)
         update_header(file, charge, confidence)
 
         confidence_percentage = str(int(round(confidence, ndigits=2) * 100))
-        # print(confidence_percentage)
 
         # rename file with attached confidence level
         file_base = core_file_name[:-4] 
-        # print(file_base)
         new_file_name = f'{base_path}/{denticity}/{connection_type}/{file_base}_{confidence_percentage}.mol'
-        # print(new_file_name)
 
         os.rename(file, new_file_name)
     except IndexError:
